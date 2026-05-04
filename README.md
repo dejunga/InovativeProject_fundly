@@ -27,11 +27,19 @@ cd InovativeProject_fundly
 
 ## 2. Set up PostgreSQL
 
-Create a database and user:
+Run the two commands **separately** — `CREATE DATABASE` cannot run in the same transaction as `CREATE USER`:
 
-```sql
-CREATE USER antonio WITH PASSWORD 'password';
-CREATE DATABASE hr_open_data OWNER antonio;
+**Windows (PowerShell):**
+```powershell
+$env:PGPASSWORD = "your_postgres_password"
+& "C:\Program Files\PostgreSQL\18\bin\psql.exe" -U postgres -c "CREATE USER antonio WITH PASSWORD 'password';"
+& "C:\Program Files\PostgreSQL\18\bin\psql.exe" -U postgres -c "CREATE DATABASE hr_open_data OWNER antonio;"
+```
+
+**macOS / Linux:**
+```bash
+psql -U postgres -c "CREATE USER antonio WITH PASSWORD 'password';"
+psql -U postgres -c "CREATE DATABASE hr_open_data OWNER antonio;"
 ```
 
 Or use any existing user — just update the `.env` accordingly.
