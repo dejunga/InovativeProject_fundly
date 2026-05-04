@@ -8,11 +8,20 @@ A data pipeline and web app that syncs NGO registry and funding data from [data.
 data.gov.hr (CKAN) → Python pipeline → PostgreSQL → FastAPI → Next.js frontend
 ```
 
+---
+
 ## Prerequisites
 
-- Python 3.11+
-- Node.js 20+
-- PostgreSQL 14+
+Install the following before starting:
+
+| Tool | Version | Download |
+|------|---------|----------|
+| Git | any | https://git-scm.com/downloads |
+| Python | 3.11+ | https://www.python.org/downloads |
+| Node.js | 20+ | https://nodejs.org |
+| PostgreSQL | 14+ | https://www.enterprisedb.com/downloads/postgres-postgresql-downloads |
+
+During PostgreSQL installation, set a password for the `postgres` superuser — you'll need it in step 2.
 
 ---
 
@@ -27,9 +36,10 @@ cd InovativeProject_fundly
 
 ## 2. Set up PostgreSQL
 
-Run the two commands **separately** — `CREATE DATABASE` cannot run in the same transaction as `CREATE USER`:
+Run the two commands **separately** — `CREATE DATABASE` cannot run in the same transaction as `CREATE USER`.
 
-**Windows (PowerShell):**
+**Windows (PowerShell)** — replace `your_postgres_password` with the password you set during installation, and adjust the version number in the path if you installed a version other than 18:
+
 ```powershell
 $env:PGPASSWORD = "your_postgres_password"
 & "C:\Program Files\PostgreSQL\18\bin\psql.exe" -U postgres -c "CREATE USER antonio WITH PASSWORD 'password';"
@@ -37,21 +47,22 @@ $env:PGPASSWORD = "your_postgres_password"
 ```
 
 **macOS / Linux:**
+
 ```bash
 psql -U postgres -c "CREATE USER antonio WITH PASSWORD 'password';"
 psql -U postgres -c "CREATE DATABASE hr_open_data OWNER antonio;"
 ```
 
-Or use any existing user — just update the `.env` accordingly.
+Or use any existing PostgreSQL user — just update the `.env` file accordingly.
 
 ---
 
 ## 3. Configure environment variables
 
-Create a `.env` file in the project root:
+Create a `.env` file in the project root. If you used the default user and password from step 2, it looks like this:
 
 ```env
-DATABASE_URL=postgresql://<user>:<password>@localhost:5432/hr_open_data
+DATABASE_URL=postgresql://antonio:password@localhost:5432/hr_open_data
 CKAN_BASE_URL=https://data.gov.hr/ckan/api/3/action
 SYNC_HOUR=6
 SYNC_MINUTE=0
@@ -63,13 +74,13 @@ LOG_LEVEL=INFO
 ## 4. Set up the Python backend
 
 ```bash
-# Create and activate virtual environment
+# Create virtual environment
 python -m venv .venv
 
-# Windows
+# Activate — Windows
 .venv\Scripts\activate
 
-# macOS / Linux
+# Activate — macOS / Linux
 source .venv/bin/activate
 
 # Install dependencies
